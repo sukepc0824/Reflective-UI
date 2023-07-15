@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reflective UI</title>
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Mono&display=swap');
+
+        body {
+            font-family: 'Space Mono', monospace;
+        }
+
+        main {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .button {
+            transition: all 0.06s ease-in;
+            width: 140px;
+            height: 60px;
+            position: relative;
+            overflow: hidden;
+            border-radius: 40px;
+            box-shadow: rgba(2, 2, 4, 0.1) 0px 4px 16px, rgba(17, 17, 26, 0.4) 0px 8px 24px;
+        }
+
+        .button:active {
+            transform: scale(0.98);
+            box-shadow: rgba(2, 2, 4, 0.1) 0px 4px 16px, rgba(17, 17, 26, 0.3) 0px 8px 24px;
+        }
+
+        .button:active .overlay {
+            outline: rgba(255, 255, 255, 0.863) 2px solid;
+            box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
+        }
+
+        video {
+            position: absolute;
+            filter: blur(4px) saturate(70%) opacity(0.84) brightness(120%);
+            height: 150px;
+            transform: scaleX(-1) translate(calc(50% - 70px), calc(-100% + 62px));
+        }
+
+        .overlay {
+            position: absolute;
+            width: calc(100% - 4px);
+            height: calc(100% - 4px);
+            margin: 2px;
+            border-radius: 100px;
+            outline: rgb(255, 255, 255, 0.6) 2px solid;
+        }
+
+        .gradation {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, rgb(255, 255, 255, 0), rgba(70, 70, 70, 0.6));
+        }
+
+        p.text {
+            z-index: 100;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            margin: 0;
+            font-size: 18px;
+            text-shadow: 0.4px 0.4px 0.4px #eee, 0 0 #000;
+            font-weight: 700;
+            color: rgba(0, 0, 0, 0.5);
+            user-select: none;
+        }
+
+        p.count {
+            font-size: 30px;
+            margin: 0;
+            line-height: 1.4;
+            text-align: center;
+            margin-bottom: 20px;
+            letter-spacing: 0.5rem;
+            text-shadow: 0.8px 0.8px 0.8px #eee, 0 0 #000;
+            color: rgba(0, 0, 0, 0.6);
+        }
+
+        .touch-point {
+            background-color: #a3a3a3;
+            width: 30px;
+            height: 30px;
+            position: absolute;
+            transition: all 8s;
+            opacity: 0.3;
+            border-radius: 50%;
+            filter: blur(7px);
+        }
+
+        .touch-point.hide {
+            opacity: 0;
+        }
+    </style>
+</head>
+
+<body>
+
+    <body>
+        <main>
+            <p class="count">0000</p>
+            <div class="button">
+                <video></video>
+                <div class="overlay"></div>
+                <div class="gradation"></div>
+                <p class="text">COUNT</p>
+            </div>
+        </main>
+        <script>
+            var video = document.querySelector('video');
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                navigator.mediaDevices.getUserMedia({ video: true }).then(function (stream) {
+                    video.srcObject = stream;
+                    video.play();
+                });
+            }
+
+            let count = 0;
+            var ret = ('0000' + count).slice(-4);
+
+            $(".button").click(function (e) {
+                count += 1;
+                var ret = ('0000' + count).slice(-4);
+                $(".count").text(ret)
+                $('<div class="touch-point">').appendTo(".button")
+                    .offset({ top: e.clientY - 15, left: e.clientX - 15})
+                    .addClass("hide")
+            })
+        </script>
+    </body>
+</body>
+
+</html>
