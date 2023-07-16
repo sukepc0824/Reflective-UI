@@ -19,42 +19,47 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
+            perspective: 120px;
+        }
+
+        .button-wrap {
+            transition: all 0.08s ease-in;
+            box-shadow: rgba(2, 2, 4, 0.1) 0px 4px 16px, rgba(17, 17, 26, 0.4) 0px 8px 24px;
+            border-radius: 30px;
         }
 
         .button {
-            transition: all 0.06s ease-in;
+            clip-path: inset(0px 0px 0px round 30px);
             width: 140px;
             height: 60px;
             position: relative;
-            overflow: hidden;
-            border-radius: 40px;
-            box-shadow: rgba(2, 2, 4, 0.1) 0px 4px 16px, rgba(17, 17, 26, 0.4) 0px 8px 24px;
+            overflow: hidden !important;
+            border-radius: 30px;
         }
 
         .button:active {
-            transform: scale(0.98);
-            box-shadow: rgba(2, 2, 4, 0.1) 0px 4px 16px, rgba(17, 17, 26, 0.3) 0px 8px 24px;
+            box-shadow: none;
         }
 
         .button:active .overlay {
-            outline: rgba(255, 255, 255, 0.863) 2px solid;
+            outline: rgba(255, 255, 255, 0.563) 2.5px solid;
             box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
         }
 
         video {
             position: absolute;
-            filter: blur(4px) saturate(70%) opacity(0.84) brightness(120%);
-            height: 150px;
+            filter: saturate(86%) opacity(0.94) brightness(140%) contrast(110%);
+            height: 140px;
             transform: scaleX(-1) translate(calc(50% - 70px), calc(-100% + 62px));
         }
 
         .overlay {
             position: absolute;
-            width: calc(100% - 4px);
-            height: calc(100% - 4px);
-            margin: 2px;
+            width: calc(100% - 5px);
+            height: calc(100% - 5px);
+            margin: 2.5px;
             border-radius: 100px;
-            outline: rgb(255, 255, 255, 0.6) 2px solid;
+            outline: rgb(255, 255, 255, 0.5) 2.5px solid;
         }
 
         .gradation {
@@ -64,8 +69,30 @@
             background: linear-gradient(to bottom, rgb(255, 255, 255, 0), rgba(70, 70, 70, 0.6));
         }
 
+        .filter {
+            position: absolute;
+            width: 100%;
+            height: 25%;
+            bottom: 0;
+            backdrop-filter: contrast(200%) brightness(100%);
+        }
+
+        .filter2 {
+            position: absolute;
+            width: 100%;
+            height: 14%;
+            bottom: 0;
+            backdrop-filter: contrast(1000%) brightness(60%);
+        }
+
+        .filter-blur {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backdrop-filter: blur(7px);
+        }
+
         p.text {
-            z-index: 100;
             position: absolute;
             top: 50%;
             left: 50%;
@@ -76,6 +103,8 @@
             font-weight: 700;
             color: rgba(0, 0, 0, 0.5);
             user-select: none;
+            text-decoration: none;
+            white-space: nowrap;
         }
 
         p.count {
@@ -95,13 +124,31 @@
             height: 30px;
             position: absolute;
             transition: all 8s;
-            opacity: 0.3;
+            opacity: 0.2;
             border-radius: 50%;
             filter: blur(7px);
         }
 
         .touch-point.hide {
             opacity: 0;
+        }
+
+        .button-plus {
+            position: absolute;
+            width: 50%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 10000;
+        }
+
+        .button-minus {
+            position: absolute;
+            width: 50%;
+            height: 100%;
+            top: 0;
+            right: 0;
+            z-index: 10000;
         }
     </style>
 </head>
@@ -110,12 +157,20 @@
 
     <body>
         <main>
+            <div class="reset-button"></div>
             <p class="count">0000</p>
-            <div class="button">
-                <video></video>
-                <div class="overlay"></div>
-                <div class="gradation"></div>
-                <p class="text">COUNT</p>
+            <div class="button-wrap">
+                <div class="button">
+                    <video></video>
+                    <div class="gradation"></div>
+                    <div class="filter"></div>
+                    <div class="filter2"></div>
+                    <div class="filter-blur"></div>
+                    <p class="text">+ COUNT -</p>
+                    <div class="overlay"></div>
+                    <div class="button-plus"></div>
+                    <div class="button-minus"></div>
+                </div>
             </div>
         </main>
         <script>
@@ -131,12 +186,38 @@
             var ret = ('0000' + count).slice(-4);
 
             $(".button").click(function (e) {
+                $('<div class="touch-point">').appendTo(".button")
+                    .offset({ top: e.clientY - 15, left: e.clientX - 15 })
+                    .addClass("hide");
+                $(".button-wrap").css("transform", "rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(1)")
+            })
+
+            $(".button").mousedown(function (e) {
+                let targetRect = e.currentTarget.getBoundingClientRect();
+                let mouseX = e.clientX - targetRect.left - 70;
+                let mouseY = e.clientY - targetRect.top - 30;
+                let button = {
+                    x : mouseX * 1.6 / 100,
+                    y : mouseY * 1.6 / 100
+                }
+
+                $(".button-wrap").css("transform", `rotateX(${-button.y * 10}deg) rotateY(${button.x * 5}deg) rotateZ(0deg) scale(0.99)`)
+            })
+
+
+            $(".button-plus").mouseup(function () {
                 count += 1;
                 var ret = ('0000' + count).slice(-4);
-                $(".count").text(ret)
-                $('<div class="touch-point">').appendTo(".button")
-                    .offset({ top: e.clientY - 15, left: e.clientX - 15})
-                    .addClass("hide")
+                $(".count").text(ret);
+            })
+
+            $(".button-minus").mouseup(function () {
+                if(count <= 0){
+                    return false;
+                }
+                count -= 1;
+                var ret = ('0000' + count).slice(-4);
+                $(".count").text(ret);
             })
         </script>
     </body>
