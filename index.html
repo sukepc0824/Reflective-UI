@@ -150,6 +150,14 @@
             right: 0;
             z-index: 10000;
         }
+
+        footer {
+            position: fixed;
+            bottom: 14px;
+            text-align: center;
+            width: 100%;
+            color: #333;
+        }
     </style>
 </head>
 
@@ -173,6 +181,10 @@
                 </div>
             </div>
         </main>
+        <footer>
+            Reflective UI Counter (It does not work properly in safari,firefox)
+            <a href="https://github.com/sukepc0824/Reflective-UI/tree/main">Github</a> <a href="https://twitter.com/pcsuke">Twitter</a>
+        </footer>
         <script>
             var video = document.querySelector('video');
             if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
